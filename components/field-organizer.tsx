@@ -549,8 +549,8 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
   const availableTargetCategories = categories.filter(c => c.id !== selectedCategory && c.id !== "all-fields")
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="w-full h-full bg-white flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+      <div className="w-full h-full bg-white flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b bg-white shrink-0">
           <div className="flex items-center justify-between">
@@ -560,9 +560,9 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
             </h1>
             <button 
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 hover:scale-110 rounded-lg transition-all duration-200 cursor-pointer group"
+              className="p-2 hover:bg-gray-100 hover:scale-110 rounded-lg transition-transform-smooth cursor-pointer group"
             >
-              <X className="w-5 h-5 text-gray-600 group-hover:text-gray-900 transition-colors" />
+              <X className="w-5 h-5 text-gray-600 group-hover:text-gray-900 transition-colors-smooth" />
             </button>
           </div>
         </div>
@@ -832,10 +832,17 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
         {/* Bottom Action Bar */}
         <div className="px-6 py-4 border-t bg-gray-50 shrink-0">
           <div className="flex justify-end space-x-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              className="transition-transform-smooth hover:scale-105 hover:shadow-md"
+            >
               {t.cancel}
             </Button>
-            <Button onClick={applyOrganization} className="bg-blue-600 hover:bg-blue-700 hover:scale-105 text-white transition-all duration-200">
+            <Button 
+              onClick={applyOrganization} 
+              className="bg-blue-600 hover:bg-blue-700 text-white transition-smooth hover:scale-105 hover:shadow-lg"
+            >
               {t.confirmOrganization}
             </Button>
           </div>
@@ -843,8 +850,8 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
 
         {/* Simple Modal Dialogs */}
         {isCreateDialogOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 w-96">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
               <h3 className="text-lg font-semibold mb-4">{t.createCategory}</h3>
               <div className="space-y-4">
                 <div>
@@ -855,14 +862,22 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     placeholder={t.enterCategoryName}
                     onKeyDown={(e) => e.key === "Enter" && createCategory()}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md transition-colors-smooth focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsCreateDialogOpen(false)}
+                    className="transition-transform-smooth hover:scale-105"
+                  >
                     {t.cancel}
                   </Button>
-                  <Button onClick={createCategory} disabled={!newCategoryName.trim()}>
+                  <Button 
+                    onClick={createCategory} 
+                    disabled={!newCategoryName.trim()}
+                    className="transition-transform-smooth hover:scale-105 disabled:hover:scale-100"
+                  >
                     {t.create}
                   </Button>
                 </div>
@@ -872,8 +887,8 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
         )}
 
         {isRenameDialogOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 w-96">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
               <h3 className="text-lg font-semibold mb-4">{t.renameCategory}</h3>
               <div className="space-y-4">
                 <div>
@@ -884,14 +899,22 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     placeholder={t.enterCategoryName}
                     onKeyDown={(e) => e.key === "Enter" && renameCategory()}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md transition-colors-smooth focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsRenameDialogOpen(false)}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsRenameDialogOpen(false)}
+                    className="transition-transform-smooth hover:scale-105"
+                  >
                     {t.cancel}
                   </Button>
-                  <Button onClick={renameCategory} disabled={!newCategoryName.trim()}>
+                  <Button 
+                    onClick={renameCategory} 
+                    disabled={!newCategoryName.trim()}
+                    className="transition-transform-smooth hover:scale-105 disabled:hover:scale-100"
+                  >
                     {t.rename}
                   </Button>
                 </div>

@@ -246,35 +246,38 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {!uploadedFile ? (
-        <Card className="border-2 border-dashed border-border hover:border-primary/50 transition-colors">
+        <Card className="border-2 border-dashed border-border hover:border-primary/50 transition-colors-smooth animate-fade-in">
           <CardContent className="p-8">
             <div
               {...getRootProps()}
               className={cn(
-                "flex flex-col items-center justify-center space-y-4 cursor-pointer rounded-lg p-8 transition-all",
+                "flex flex-col items-center justify-center space-y-4 cursor-pointer rounded-lg p-8 transition-smooth",
                 "bg-gradient-to-br from-primary/5 to-secondary/5 hover:from-primary/10 hover:to-secondary/10",
                 isDragActive && "from-primary/10 to-secondary/10 scale-[1.02]",
               )}
             >
               <input {...getInputProps()} />
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center transition-transform-smooth hover:scale-110 animate-scale-in">
                 <Upload className="w-8 h-8 text-primary-foreground" />
               </div>
-              <div className="text-center">
+              <div className="text-center animate-slide-up">
                 <h3 className="text-xl font-semibold mb-2">
                   {isDragActive ? "Drop your PDF here" : "Upload PDF Document"}
                 </h3>
                 <p className="text-muted-foreground mb-4">Drag and drop your PDF file here, or click to browse</p>
-                <Button variant="outline" className="border-primary/20 hover:bg-primary/5 bg-transparent">
+                <Button 
+                  variant="outline" 
+                  className="border-primary/20 hover:bg-primary/5 bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
+                >
                   Choose File
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground">Supports PDF files up to 10MB</p>
+              <p className="text-sm text-muted-foreground animate-fade-in" style={{animationDelay: '300ms'}}>Supports PDF files up to 10MB</p>
             </div>
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="animate-scale-in">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
@@ -292,20 +295,20 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={removeFile}
-                className="text-muted-foreground hover:text-destructive"
+                className="text-muted-foreground hover:text-destructive transition-colors-smooth hover:scale-110"
               >
                 <X className="w-4 h-4" />
               </Button>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 animate-fade-in">
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
 
             {isProcessing && (
-              <div className="flex items-center justify-center p-8">
+              <div className="flex items-center justify-center p-8 animate-fade-in">
                 <div className="flex items-center space-x-3">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   <span className="text-lg">Detecting form fields...</span>
@@ -314,14 +317,18 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
             )}
 
             {!isProcessing && !pdfData && (
-              <div className="flex gap-3">
+              <div className="flex gap-3 animate-slide-up">
                 <Button
                   onClick={processFile}
-                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-smooth hover:scale-105 hover:shadow-lg"
                 >
                   Detect Fields
                 </Button>
-                <Button variant="outline" onClick={removeFile}>
+                <Button 
+                  variant="outline" 
+                  onClick={removeFile}
+                  className="transition-smooth hover:scale-105 hover:shadow-md"
+                >
                   Upload Different File
                 </Button>
               </div>

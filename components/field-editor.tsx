@@ -127,20 +127,24 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
     }
 
     // Group fields by categories
-    return categories.map((category) => {
+    return categories.map((category, index) => {
       if (category.fields.length === 0) return null
       
       return (
-        <div key={category.id} className="mb-6">
-          <div className="flex items-center space-x-2 mb-3 p-2 bg-gray-50 rounded-md">
-            <FileText className="w-4 h-4 text-gray-600" />
-            <h3 className="font-medium text-gray-800">{category.name}</h3>
-            <span className="text-sm text-gray-500">({category.fields.length} fields)</span>
+        <div key={category.id} className="mb-6 animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
+          <div className="flex items-center space-x-2 mb-3 p-2 bg-gray-50 rounded-md transition-colors-smooth hover:bg-gray-100 group">
+            <FileText className="w-4 h-4 text-gray-600 group-hover:text-gray-800 transition-colors-smooth" />
+            <h3 className="font-medium text-gray-800 group-hover:text-gray-900 transition-colors-smooth">{category.name}</h3>
+            <span className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors-smooth">({category.fields.length} fields)</span>
           </div>
           <div className="space-y-3 pl-6">
-            {category.fields.map((fieldName: string) => {
+            {category.fields.map((fieldName: string, fieldIndex: number) => {
               const field = pdfData.fields.find(f => f.name === fieldName)
-              return field ? renderField(field) : null
+              return field ? (
+                <div key={fieldName} className="animate-slide-up" style={{animationDelay: `${(index * 100) + (fieldIndex * 50)}ms`}}>
+                  {renderField(field)}
+                </div>
+              ) : null
             })}
           </div>
         </div>
@@ -208,7 +212,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
     switch (field.type) {
       case "text":
         return (
-          <div key={field.name} className="space-y-2">
+          <div key={field.name} className="space-y-2 animate-fade-in">
             <Label htmlFor={field.name} className="text-sm font-medium">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
@@ -218,20 +222,21 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
               value={value}
               onChange={(e) => updateFieldValue(field.name, e.target.value)}
               placeholder={`Enter ${field.name.toLowerCase()}`}
-              className="focus:ring-primary focus:border-primary bg-white"
+              className="transition-colors-smooth focus:ring-2 focus:ring-primary focus:border-primary bg-white hover:border-gray-400"
             />
           </div>
         )
 
       case "checkbox":
         return (
-          <div key={field.name} className="flex items-center space-x-2">
+          <div key={field.name} className="flex items-center space-x-2 animate-fade-in">
             <Checkbox
               id={field.name}
               checked={value === "true"}
               onCheckedChange={(checked) => updateFieldValue(field.name, checked ? "true" : "false")}
+              className="transition-colors-smooth"
             />
-            <Label htmlFor={field.name} className="text-sm font-medium">
+            <Label htmlFor={field.name} className="text-sm font-medium cursor-pointer">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
@@ -240,13 +245,13 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
 
       case "select":
         return (
-          <div key={field.name} className="space-y-2">
+          <div key={field.name} className="space-y-2 animate-fade-in">
             <Label htmlFor={field.name} className="text-sm font-medium">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Select value={value} onValueChange={(newValue) => updateFieldValue(field.name, newValue)}>
-              <SelectTrigger className="bg-white">
+              <SelectTrigger className="bg-white transition-colors-smooth hover:border-gray-400 focus:ring-2 focus:ring-primary">
                 <SelectValue placeholder={`Select ${field.name.toLowerCase()}`} />
               </SelectTrigger>
               <SelectContent>
@@ -262,14 +267,14 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
 
       case "radio":
         return (
-          <div key={field.name} className="space-y-2">
+          <div key={field.name} className="space-y-2 animate-fade-in">
             <Label className="text-sm font-medium">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <div className="space-y-2">
               {field.options?.map((option: string) => (
-                <div key={option} className="flex items-center space-x-2">
+                <div key={option} className="flex items-center space-x-2 group">
                   <input
                     type="radio"
                     id={`${field.name}-${option}`}
@@ -277,9 +282,9 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
                     value={option}
                     checked={value === option}
                     onChange={(e) => updateFieldValue(field.name, e.target.value)}
-                    className="text-primary focus:ring-primary"
+                    className="text-primary focus:ring-primary transition-colors-smooth"
                   />
-                  <Label htmlFor={`${field.name}-${option}`} className="text-sm">
+                  <Label htmlFor={`${field.name}-${option}`} className="text-sm cursor-pointer group-hover:text-primary transition-colors-smooth">
                     {option}
                   </Label>
                 </div>
@@ -290,7 +295,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
 
       default:
         return (
-          <div key={field.name} className="space-y-2">
+          <div key={field.name} className="space-y-2 animate-fade-in">
             <Label htmlFor={field.name} className="text-sm font-medium">
               {field.name} ({field.type}){field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
@@ -299,7 +304,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
               value={value}
               onChange={(e) => updateFieldValue(field.name, e.target.value)}
               placeholder={`Enter ${field.name.toLowerCase()}`}
-              className="bg-white"
+              className="bg-white transition-colors-smooth hover:border-gray-400 focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
         )
@@ -325,9 +330,13 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between animate-slide-up">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={onBack} className="p-2">
+          <Button 
+            variant="ghost" 
+            onClick={onBack} 
+            className="p-2 transition-transform-smooth hover:scale-110 hover:bg-gray-100"
+          >
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
@@ -338,22 +347,37 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={() => setShowPreview(!showPreview)} size="sm" className="bg-transparent">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowPreview(!showPreview)} 
+            size="sm" 
+            className="bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
+          >
             <Eye className="w-4 h-4 mr-2" />
             {showPreview ? "Hide Preview" : "Show Preview"}
           </Button>
-          <Button variant="outline" onClick={() => setShowFieldOrganizer(true)} size="sm" className="bg-transparent">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowFieldOrganizer(true)} 
+            size="sm" 
+            className="bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
+          >
             <Settings className="w-4 h-4 mr-2" />
             {language === "fr" ? "Organiser" : "Organize"}
           </Button>
-          <Button variant="outline" onClick={resetFields} size="sm">
+          <Button 
+            variant="outline" 
+            onClick={resetFields} 
+            size="sm"
+            className="transition-smooth hover:scale-105 hover:shadow-md"
+          >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
           </Button>
           <Button
             onClick={generatePDF}
             disabled={isGenerating}
-            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-smooth hover:scale-105 hover:shadow-lg disabled:hover:scale-100"
           >
             {isGenerating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {isGenerating ? "Generating..." : "Generate PDF"}
@@ -363,17 +387,22 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
       </div>
 
       {/* Fields Grid */}
-      <div className={`grid gap-6 ${showPreview ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
+      <div className={`grid gap-6 ${showPreview ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'} animate-fade-in`}>
         {/* Form Fields */}
         <div className={showPreview ? 'space-y-6' : 'lg:col-span-2 space-y-6'}>
-          <Card>
+          <Card className="animate-slide-up">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <FileText className="w-5 h-5" />
                   <span>Form Fields</span>
                 </CardTitle>
-                <Button variant="outline" onClick={clearAllFields} size="sm" className="text-xs bg-transparent">
+                <Button 
+                  variant="outline" 
+                  onClick={clearAllFields} 
+                  size="sm" 
+                  className="text-xs bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
+                >
                   Clear All
                 </Button>
               </div>
@@ -384,7 +413,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
 
         {/* PDF Preview or Sidebar */}
         {showPreview ? (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-slide-up">
             <PDFPreview 
               file={originalFile} 
               className="w-full"

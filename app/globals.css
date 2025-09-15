@@ -114,6 +114,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Animation System Variables */
+  --animation-fast: 200ms;
+  --animation-medium: 300ms;
+  --animation-slow: 500ms;
+  --easing-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --easing-sharp: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
@@ -122,5 +130,65 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Global Animation Classes */
+  .animate-fade-in {
+    animation: fadeIn var(--animation-fast) var(--easing-smooth) forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp var(--animation-medium) var(--easing-smooth) forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn var(--animation-fast) var(--easing-bounce) forwards;
+  }
+  
+  /* Smooth Transitions for Interactive Elements */
+  .transition-smooth {
+    transition: all var(--animation-fast) var(--easing-smooth);
+  }
+  
+  .transition-colors-smooth {
+    transition: background-color var(--animation-fast) var(--easing-smooth),
+                border-color var(--animation-fast) var(--easing-smooth),
+                color var(--animation-fast) var(--easing-smooth);
+  }
+  
+  .transition-transform-smooth {
+    transition: transform var(--animation-fast) var(--easing-smooth);
+  }
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

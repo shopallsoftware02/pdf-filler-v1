@@ -3,45 +3,30 @@
 import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
+  NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import { Menu, MoveRight, X, Languages, Moon, Sun } from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "next-themes"
-import Link from "next/link"
 
 interface Translation {
   home: string
-  features: string
-  contactUs: string
   pdfFormFiller: string
   getStarted: string
-  featuresDescription: string
-  contactDescription: string
 }
 
 const translations: Record<string, Translation> = {
   en: {
     home: "Home",
-    features: "Features",
-    contactUs: "Contact Us",
     pdfFormFiller: "PDF Form Filler",
     getStarted: "Get Started",
-    featuresDescription: "Discover powerful PDF form filling capabilities",
-    contactDescription: "Get in touch with our team for support",
   },
   fr: {
     home: "Accueil",
-    features: "Fonctionnalités",
-    contactUs: "Nous Contacter",
     pdfFormFiller: "Remplisseur de Formulaires PDF",
     getStarted: "Commencer",
-    featuresDescription: "Découvrez les puissantes capacités de remplissage de formulaires PDF",
-    contactDescription: "Contactez notre équipe pour obtenir de l'aide",
   },
 }
 
@@ -65,51 +50,21 @@ function Header({ onLanguageChange, currentLanguage }: HeaderProps = {}) {
     setTheme(theme === "light" ? "dark" : "light")
   }
 
+  // Handle home navigation - clears any session data and redirects to main page
+  const handleHomeClick = () => {
+    // Clear any current PDF session if user wants to go back to home
+    // This will reset the app to the upload state
+    if (typeof window !== "undefined") {
+      window.location.href = "/"
+    }
+  }
+
   const navigationItems = [
     {
       title: t.home,
       href: "/",
       description: "",
-    },
-    {
-      title: t.features,
-      description: t.featuresDescription,
-      items: [
-        {
-          title: "Auto Detection",
-          href: "/features#auto-detection",
-        },
-        {
-          title: "Field Filling",
-          href: "/features#field-filling",
-        },
-        {
-          title: "PDF Generation",
-          href: "/features#pdf-generation",
-        },
-        {
-          title: "Batch Processing",
-          href: "/features#batch-processing",
-        },
-      ],
-    },
-    {
-      title: t.contactUs,
-      description: t.contactDescription,
-      items: [
-        {
-          title: "Support",
-          href: "/contact#support",
-        },
-        {
-          title: "Sales",
-          href: "/contact#sales",
-        },
-        {
-          title: "Partnership",
-          href: "/contact#partnership",
-        },
-      ],
+      onClick: handleHomeClick,
     },
   ]
 
@@ -121,51 +76,28 @@ function Header({ onLanguageChange, currentLanguage }: HeaderProps = {}) {
             <NavigationMenuList className="flex justify-start gap-4 flex-row">
               {navigationItems.map((item) => (
                 <NavigationMenuItem key={item.title}>
-                  {item.href ? (
-                    <>
-                      <NavigationMenuLink asChild>
-                        <Link href={item.href}>
-                          <Button variant="ghost">{item.title}</Button>
-                        </Link>
-                      </NavigationMenuLink>
-                    </>
-                  ) : (
-                    <>
-                      <NavigationMenuTrigger className="font-medium text-sm">{item.title}</NavigationMenuTrigger>
-                      <NavigationMenuContent className="!w-[450px] p-4">
-                        <div className="flex flex-col lg:grid grid-cols-2 gap-4">
-                          <div className="flex flex-col h-full justify-between">
-                            <div className="flex flex-col">
-                              <p className="text-base">{item.title}</p>
-                              <p className="text-muted-foreground text-sm">{item.description}</p>
-                            </div>
-                          </div>
-                          <div className="flex flex-col text-sm h-full justify-end">
-                            {item.items?.map((subItem) => (
-                              <NavigationMenuLink asChild key={subItem.title}>
-                                <Link
-                                  href={subItem.href}
-                                  className="flex flex-row justify-between items-center hover:bg-muted py-2 px-4 rounded"
-                                >
-                                  <span>{subItem.title}</span>
-                                  <MoveRight className="w-4 h-4 text-muted-foreground" />
-                                </Link>
-                              </NavigationMenuLink>
-                            ))}
-                          </div>
-                        </div>
-                      </NavigationMenuContent>
-                    </>
-                  )}
+                  <NavigationMenuLink asChild>
+                    <Button 
+                      variant="ghost" 
+                      onClick={item.onClick}
+                      className="transition-smooth hover:scale-105"
+                    >
+                      {item.title}
+                    </Button>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
         <div className="flex lg:justify-center">
-          <Link href="/" className="font-semibold text-lg">
+          <Button 
+            variant="ghost" 
+            onClick={handleHomeClick}
+            className="font-semibold text-lg transition-smooth hover:scale-105 p-2"
+          >
             {t.pdfFormFiller}
-          </Link>
+          </Button>
         </div>
         <div className="flex justify-end w-full gap-4 items-center">
           <Button
@@ -215,23 +147,14 @@ function Header({ onLanguageChange, currentLanguage }: HeaderProps = {}) {
               </div>
               {navigationItems.map((item) => (
                 <div key={item.title}>
-                  <div className="flex flex-col gap-2">
-                    {item.href ? (
-                      <Link href={item.href} className="flex justify-between items-center">
-                        <span className="text-lg">{item.title}</span>
-                        <MoveRight className="w-4 h-4 stroke-1 text-muted-foreground" />
-                      </Link>
-                    ) : (
-                      <p className="text-lg">{item.title}</p>
-                    )}
-                    {item.items &&
-                      item.items.map((subItem) => (
-                        <Link key={subItem.title} href={subItem.href} className="flex justify-between items-center">
-                          <span className="text-muted-foreground">{subItem.title}</span>
-                          <MoveRight className="w-4 h-4 stroke-1" />
-                        </Link>
-                      ))}
-                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={item.onClick}
+                    className="flex justify-between items-center w-full transition-smooth hover:scale-105"
+                  >
+                    <span className="text-lg">{item.title}</span>
+                    <MoveRight className="w-4 h-4 stroke-1 text-muted-foreground" />
+                  </Button>
                 </div>
               ))}
             </div>
