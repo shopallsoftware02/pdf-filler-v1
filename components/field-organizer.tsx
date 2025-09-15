@@ -549,7 +549,7 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
   const availableTargetCategories = categories.filter(c => c.id !== selectedCategory && c.id !== "all-fields")
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+    <div className="fixed inset-0 bg-transparent z-50 flex items-center justify-center animate-fade-in">
       <div className="w-full h-full bg-white flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b bg-white shrink-0">
@@ -850,7 +850,7 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
 
         {/* Simple Modal Dialogs */}
         {isCreateDialogOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+          <div className="fixed inset-0 bg-transparent z-50 flex items-center justify-center animate-fade-in">
             <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
               <h3 className="text-lg font-semibold mb-4">{t.createCategory}</h3>
               <div className="space-y-4">
@@ -887,7 +887,7 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
         )}
 
         {isRenameDialogOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center animate-fade-in">
+          <div className="fixed inset-0 bg-transparent z-50 flex items-center justify-center animate-fade-in">
             <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
               <h3 className="text-lg font-semibold mb-4">{t.renameCategory}</h3>
               <div className="space-y-4">

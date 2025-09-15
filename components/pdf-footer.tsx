@@ -20,7 +20,7 @@ const footerTranslations: Record<string, Translation> = {
     contact: "Contact",
     privacy: "Privacy",
     terms: "Terms",
-    copyright: "© 2024 PDF Form Filler",
+    copyright: "© 2025 PDF Form Filler",
     allRightsReserved: "All rights reserved",
   },
   fr: {
@@ -29,7 +29,7 @@ const footerTranslations: Record<string, Translation> = {
     contact: "Contact",
     privacy: "Confidentialité",
     terms: "Conditions",
-    copyright: "© 2024 Remplisseur de Formulaires PDF",
+    copyright: "© 2025 Remplisseur de Formulaires PDF",
     allRightsReserved: "Tous droits réservés",
   },
 }
@@ -58,13 +58,13 @@ export function PDFFooter({ language }: PDFFooterProps) {
         },
       ]}
       mainLinks={[
-        { href: "/about", label: t.about },
-        { href: "/blog", label: t.blog },
-        { href: "/contact", label: t.contact },
+        { href: "/", label: t.about },
+        { href: "/", label: t.blog },
+        { href: "/", label: t.contact },
       ]}
       legalLinks={[
-        { href: "/privacy", label: t.privacy },
-        { href: "/terms", label: t.terms },
+        { href: "/", label: t.privacy },
+        { href: "/", label: t.terms },
       ]}
       copyright={{
         text: t.copyright,
