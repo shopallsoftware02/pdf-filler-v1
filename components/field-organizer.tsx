@@ -850,8 +850,8 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
 
         {/* Simple Modal Dialogs */}
         {isCreateDialogOpen && (
-          <div className="fixed inset-0 bg-transparent z-50 flex items-center justify-center animate-fade-in">
-            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
+          <div className="fixed inset-0 bg-white/20 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
+            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in shadow-xl border">
               <h3 className="text-lg font-semibold mb-4">{t.createCategory}</h3>
               <div className="space-y-4">
                 <div>
@@ -887,8 +887,8 @@ export function FieldOrganizer({ fields, language, onClose, pdfName, onApplyOrga
         )}
 
         {isRenameDialogOpen && (
-          <div className="fixed inset-0 bg-transparent z-50 flex items-center justify-center animate-fade-in">
-            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in">
+          <div className="fixed inset-0 bg-white/20 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
+            <div className="bg-white rounded-lg p-6 w-96 animate-scale-in shadow-xl border">
               <h3 className="text-lg font-semibold mb-4">{t.renameCategory}</h3>
               <div className="space-y-4">
                 <div>
