@@ -8,6 +8,7 @@ import { Upload, FileText, X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { parsePDFFields, type PDFParseResult } from "@/lib/pdf-parser"
 import { FieldEditor } from "./field-editor"
+import { useTranslations } from "@/lib/translations"
 
 interface UploadedFile {
   file: File
@@ -26,12 +27,13 @@ interface PDFUploaderProps {
   language?: "en" | "fr"
 }
 
-export function PDFUploader({ language = "en" }: PDFUploaderProps) {
+export function PDFUploader({ language = "fr" }: PDFUploaderProps) {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [pdfData, setPdfData] = useState<PDFParseResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isRestoringSession, setIsRestoringSession] = useState(true)
+  const t = useTranslations(language)
 
   // Restore session on component mount
   useEffect(() => {
@@ -222,7 +224,7 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
         <Card>
           <CardContent className="p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Restoring your session...</p>
+            <p className="text-gray-600">{t.loadingFormData}</p>
           </CardContent>
         </Card>
       </div>
@@ -262,17 +264,17 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
               </div>
               <div className="text-center animate-slide-up">
                 <h3 className="text-xl font-semibold mb-2">
-                  {isDragActive ? "Drop your PDF here" : "Upload PDF Document"}
+                  {isDragActive ? t.dropYourPdfHere : t.uploadPdfDocument}
                 </h3>
-                <p className="text-muted-foreground mb-4">Drag and drop your PDF file here, or click to browse</p>
+                <p className="text-muted-foreground mb-4">{t.dragAndDropYourPdf}</p>
                 <Button 
                   variant="outline" 
                   className="border-primary/20 hover:bg-primary/5 bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
                 >
-                  Choose File
+                  {t.chooseFile}
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground animate-fade-in" style={{animationDelay: '300ms'}}>Supports PDF files up to 10MB</p>
+              <p className="text-sm text-muted-foreground animate-fade-in" style={{animationDelay: '300ms'}}>{t.supportsPdfFiles}</p>
             </div>
           </CardContent>
         </Card>
@@ -311,7 +313,7 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
               <div className="flex items-center justify-center p-8 animate-fade-in">
                 <div className="flex items-center space-x-3">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <span className="text-lg">Detecting form fields...</span>
+                  <span className="text-lg">{t.detectingFormFields}</span>
                 </div>
               </div>
             )}
@@ -322,14 +324,14 @@ export function PDFUploader({ language = "en" }: PDFUploaderProps) {
                   onClick={processFile}
                   className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-smooth hover:scale-105 hover:shadow-lg"
                 >
-                  Detect Fields
+                  {t.detectFields}
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={removeFile}
                   className="transition-smooth hover:scale-105 hover:shadow-md"
                 >
-                  Upload Different File
+                  {t.uploadDifferentFile}
                 </Button>
               </div>
             )}

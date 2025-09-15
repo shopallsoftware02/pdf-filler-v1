@@ -10,25 +10,7 @@ import {
 import { Menu, MoveRight, X, Languages, Moon, Sun } from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "next-themes"
-
-interface Translation {
-  home: string
-  pdfFormFiller: string
-  getStarted: string
-}
-
-const translations: Record<string, Translation> = {
-  en: {
-    home: "Home",
-    pdfFormFiller: "PDF Form Filler",
-    getStarted: "Get Started",
-  },
-  fr: {
-    home: "Accueil",
-    pdfFormFiller: "Remplisseur de Formulaires PDF",
-    getStarted: "Commencer",
-  },
-}
+import { useTranslations } from "@/lib/translations"
 
 interface HeaderProps {
   onLanguageChange?: (language: "en" | "fr") => void
@@ -37,9 +19,9 @@ interface HeaderProps {
 
 function Header({ onLanguageChange, currentLanguage }: HeaderProps = {}) {
   const [isOpen, setOpen] = useState(false)
-  const [language, setLanguage] = useState<"en" | "fr">(currentLanguage || "en")
+  const [language, setLanguage] = useState<"en" | "fr">(currentLanguage || "fr")
   const { setTheme, theme } = useTheme()
-  const t = translations[language]
+  const t = useTranslations(language)
 
   const handleLanguageChange = (newLanguage: "en" | "fr") => {
     setLanguage(newLanguage)

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Save, FolderOpen, Trash2, Download } from "lucide-react"
+import { useTranslations } from "@/lib/translations"
 
 interface FieldTemplate {
   id: string
@@ -20,12 +21,14 @@ interface TemplateManagerProps {
   currentFields: Record<string, string>
   documentName: string
   onLoadTemplate: (fields: Record<string, string>) => void
+  language?: "en" | "fr"
 }
 
-export function TemplateManager({ currentFields, documentName, onLoadTemplate }: TemplateManagerProps) {
+export function TemplateManager({ currentFields, documentName, onLoadTemplate, language = "fr" }: TemplateManagerProps) {
   const [templates, setTemplates] = useState<FieldTemplate[]>([])
   const [templateName, setTemplateName] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const t = useTranslations(language)
 
   // Load templates from localStorage on mount
   useEffect(() => {
@@ -90,38 +93,38 @@ export function TemplateManager({ currentFields, documentName, onLoadTemplate }:
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center space-x-2">
             <FolderOpen className="w-5 h-5" />
-            <span>Templates</span>
+            <span>{t.templates}</span>
           </span>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" variant="outline" className="text-xs bg-transparent">
                 <Save className="w-3 h-3 mr-1" />
-                Save Template
+                {t.saveTemplate}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Save Field Template</DialogTitle>
+                <DialogTitle>{t.saveTemplate}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="template-name">Template Name</Label>
+                  <Label htmlFor="template-name">{t.templateName}</Label>
                   <Input
                     id="template-name"
                     value={templateName}
                     onChange={(e) => setTemplateName(e.target.value)}
-                    placeholder="Enter template name"
+                    placeholder={t.enterTemplateName}
                   />
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  This will save {filledFieldsCount} of {totalFieldsCount} filled fields for "{documentName}".
+                  {t.saveTemplateDescription.replace("{filledFields}", String(filledFieldsCount)).replace("{totalFields}", String(totalFieldsCount)).replace("{documentName}", documentName)}
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancel
+                    {t.cancel}
                   </Button>
                   <Button onClick={saveTemplate} disabled={!templateName.trim()}>
-                    Save Template
+                    {t.save}
                   </Button>
                 </div>
               </div>
@@ -133,8 +136,8 @@ export function TemplateManager({ currentFields, documentName, onLoadTemplate }:
         {templates.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <FolderOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No templates saved yet</p>
-            <p className="text-sm">Save your current field values as a template for future use</p>
+            <p>{t.noTemplatesSaved}</p>
+            <p className="text-sm">{t.noTemplatesSavedDescription}</p>
           </div>
         ) : (
           <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -146,7 +149,7 @@ export function TemplateManager({ currentFields, documentName, onLoadTemplate }:
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium truncate">{template.name}</h4>
                   <p className="text-xs text-muted-foreground">
-                    {template.documentName} • {Object.values(template.fields).filter((v) => v.trim()).length} fields •{" "}
+                    {template.documentName} • {Object.values(template.fields).filter((v) => v.trim()).length} {t.fields} •{" "}
                     {new Date(template.createdAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -157,7 +160,7 @@ export function TemplateManager({ currentFields, documentName, onLoadTemplate }:
                     onClick={() => loadTemplate(template)}
                     className="text-xs px-2 py-1 h-auto"
                   >
-                    Load
+                    {t.load}
                   </Button>
                   <Button
                     size="sm"

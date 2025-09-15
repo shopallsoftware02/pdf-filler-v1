@@ -4,9 +4,11 @@ import { PDFUploader } from "@/components/pdf-uploader"
 import { Header } from "@/components/ui/header"
 import { PDFFooter } from "@/components/pdf-footer"
 import { useState } from "react"
+import { useTranslations } from "@/lib/translations"
 
 export default function Home() {
-  const [language, setLanguage] = useState<"en" | "fr">("en")
+  const [language, setLanguage] = useState<"en" | "fr">("fr")
+  const t = useTranslations(language)
 
   return (
     <>
@@ -15,11 +17,10 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-4xl font-bold text-balance bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4 animate-slide-up">
-              PDF Form Filler
+              {t.mainTitle}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty animate-slide-up" style={{animationDelay: '200ms'}}>
-              Upload your PDF documents, automatically detect form fields, fill them out with ease, and generate
-              completed PDFs instantly.
+              {t.mainDescription}
             </p>
           </div>
 

@@ -14,6 +14,7 @@ import { TemplateManager } from "./template-manager"
 import { FieldOrganizer } from "./field-organizer"
 import { PDFPreview } from "./pdf-preview"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslations } from "@/lib/translations"
 
 interface FieldEditorProps {
   pdfData: PDFParseResult
@@ -22,8 +23,9 @@ interface FieldEditorProps {
   language?: "en" | "fr"
 }
 
-export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: FieldEditorProps) {
+export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: FieldEditorProps) {
   const { toast } = useToast()
+  const t = useTranslations(language)
   
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [isInitialized, setIsInitialized] = useState(false)
@@ -135,7 +137,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
           <div className="flex items-center space-x-2 mb-3 p-2 bg-gray-50 rounded-md transition-colors-smooth hover:bg-gray-100 group">
             <FileText className="w-4 h-4 text-gray-600 group-hover:text-gray-800 transition-colors-smooth" />
             <h3 className="font-medium text-gray-800 group-hover:text-gray-900 transition-colors-smooth">{category.name}</h3>
-            <span className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors-smooth">({category.fields.length} fields)</span>
+            <span className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors-smooth">({category.fields.length} {t.fields})</span>
           </div>
           <div className="space-y-3 pl-6">
             {category.fields.map((fieldName: string, fieldIndex: number) => {
@@ -354,7 +356,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
             className="bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
           >
             <Eye className="w-4 h-4 mr-2" />
-            {showPreview ? "Hide Preview" : "Show Preview"}
+            {showPreview ? t.hidePreview : t.showPreview}
           </Button>
           <Button 
             variant="outline" 
@@ -363,7 +365,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
             className="bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
           >
             <Settings className="w-4 h-4 mr-2" />
-            {language === "fr" ? "Organiser" : "Organize"}
+            {t.organize}
           </Button>
           <Button 
             variant="outline" 
@@ -372,7 +374,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
             className="transition-smooth hover:scale-105 hover:shadow-md"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
+            {t.reset}
           </Button>
           <Button
             onClick={generatePDF}
@@ -380,7 +382,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
             className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-smooth hover:scale-105 hover:shadow-lg disabled:hover:scale-100"
           >
             {isGenerating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {isGenerating ? "Generating..." : "Generate PDF"}
+            {isGenerating ? t.generating : t.generatePdf}
             <Download className="w-4 h-4 ml-2" />
           </Button>
         </div>
@@ -395,7 +397,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <FileText className="w-5 h-5" />
-                  <span>Form Fields</span>
+                  <span>{t.formFields}</span>
                 </CardTitle>
                 <Button 
                   variant="outline" 
@@ -403,7 +405,7 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
                   size="sm" 
                   className="text-xs bg-transparent transition-smooth hover:scale-105 hover:shadow-md"
                 >
-                  Clear All
+                  {t.clearAll}
                 </Button>
               </div>
             </CardHeader>
@@ -426,21 +428,21 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
             {/* Compact Summary */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Quick Summary</CardTitle>
+                <CardTitle className="text-lg">{t.documentSummary}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-primary">{pdfData.pageCount}</div>
-                    <div className="text-xs text-muted-foreground">Pages</div>
+                    <div className="text-xs text-muted-foreground">{t.pages}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-primary">{pdfData.fields.length}</div>
-                    <div className="text-xs text-muted-foreground">Fields</div>
+                    <div className="text-xs text-muted-foreground">{t.fields}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-primary">{Math.round((filledFieldsCount / pdfData.fields.length) * 100)}%</div>
-                    <div className="text-xs text-muted-foreground">Complete</div>
+                    <div className="text-xs text-muted-foreground">{t.progress}</div>
                   </div>
                 </div>
               </CardContent>
@@ -467,16 +469,16 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "en" }: 
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <span className="text-muted-foreground">Pages:</span>
+                      <span className="text-muted-foreground">{t.pages}:</span>
                       <p className="font-medium">{pdfData.pageCount}</p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Fields:</span>
+                      <span className="text-muted-foreground">{t.fields}:</span>
                       <p className="font-medium">{pdfData.fields.length}</p>
                     </div>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Progress:</span>
+                    <span className="text-muted-foreground">{t.progress}:</span>
                     <div className="flex items-center space-x-2 mt-1">
                       <div className="flex-1 bg-muted rounded-full h-2">
                         <div
