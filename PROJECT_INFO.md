@@ -2,7 +2,7 @@
 
 ## 📋 Project Overview
 
-**PDF Form Filler** is a Next.js-based web application that allows users to upload PDF forms, automatically detect form fields, fill them out interactively, and organize fields into custom categories. The application provides a clean, user-friendly interface for managing PDF form data with persistent storage.
+**PDF Form Filler** is a Next.js-based web application that allows users to upload PDF forms, automatically detect form fields, fill them out interactively, and organize fields into custom categories. The application features a comprehensive French translation system and provides a clean, user-friendly interface for managing PDF form data with persistent storage.
 
 ### 🎯 Core Functionality
 - **PDF Upload & Parsing**: Drag-and-drop PDF upload with automatic form field detection
@@ -10,7 +10,35 @@
 - **Field Organization**: Create custom categories to group related fields for better organization
 - **Data Persistence**: Automatic localStorage saving of both field values and category organization
 - **PDF Generation**: Export filled forms as new PDF files
-- **Clean UI/UX**: Modern interface built with shadcn/ui components and Tailwind CSS
+- **Internationalization**: Comprehensive French translation system with centralized translation management
+- **Clean UI/UX**: Modern interface built with shadcn/ui components, smooth animations, and professional modal designs
+
+---
+
+## 🌐 Internationalization System
+
+### **Translation Architecture**
+- **Location**: `/lib/translations/` directory
+- **Files**: 
+  - `index.ts` - Translation hook and type definitions
+  - `en.ts` - English translations
+  - `fr.ts` - French translations (default)
+- **Hook**: `useTranslations(language)` for component integration
+- **Type Safety**: Full TypeScript support for all translation keys
+
+### **Default Language**: French
+- Professional French translations throughout the interface
+- Template Manager: "Modèles", "Sauvegarder le Modèle", "Aucun modèle sauvegardé"
+- Field Editor: "Organiser", "Champs de Formulaire", "Résumé du Document"
+- All UI elements translated for consistent French experience
+
+### **Key Translation Areas**
+- Navigation and headers
+- Form field labels and placeholders
+- Button text and actions
+- Error messages and notifications
+- Dialog and modal content
+- Footer and legal text
 
 ---
 
@@ -49,23 +77,28 @@
 ```
 pdf-form-filler/
 ├── app/
-│   ├── globals.css          # Global styles and Tailwind imports
+│   ├── globals.css          # Global styles, Tailwind imports, and animation system
 │   ├── layout.tsx           # Root layout component
-│   └── page.tsx             # Main landing/upload page
+│   └── page.tsx             # Main landing/upload page (French by default)
 ├── components/
-│   ├── field-editor.tsx     # 🔥 CORE: Main form editing interface
-│   ├── field-organizer.tsx  # 🔥 CORE: Category management & field organization
-│   ├── pdf-uploader.tsx     # PDF drag-and-drop upload component
+│   ├── field-editor.tsx     # 🔥 CORE: Main form editing interface (French translated)
+│   ├── field-organizer.tsx  # 🔥 CORE: Category management with enhanced modal styling
+│   ├── pdf-uploader.tsx     # PDF drag-and-drop upload component (French translated)
 │   ├── pdf-preview.tsx      # PDF document preview with pdfjs-dist
-│   ├── template-manager.tsx # Save/load field templates
-│   └── ui/                  # shadcn/ui components
+│   ├── template-manager.tsx # Save/load field templates (French translated)
+│   ├── pdf-footer.tsx       # Bilingual footer component (copyright 2025)
+│   └── ui/                  # shadcn/ui components with enhanced styling
 ├── lib/
+│   ├── translations/        # 🔥 NEW: Centralized translation system
+│   │   ├── index.ts         # useTranslations hook and type definitions
+│   │   ├── en.ts            # English translations
+│   │   └── fr.ts            # French translations (comprehensive)
 │   ├── pdf-parser.ts        # 🔥 CORE: PDF processing logic
 │   └── utils.ts             # Utility functions (cn, etc.)
 ├── public/
 │   └── pdf.worker.min.js    # PDF.js web worker (required)
-├── CHANGELOG.md             # Detailed change history
-├── PROJECT_INFO.md          # This documentation file
+├── CHANGELOG.md             # Detailed change history (updated)
+├── PROJECT_INFO.md          # This documentation file (updated)
 ├── next.config.mjs          # Next.js configuration with webpack tweaks
 ├── tsconfig.json            # TypeScript configuration
 └── package.json             # Dependencies and scripts
@@ -73,14 +106,15 @@ pdf-form-filler/
 
 ### 🔥 **Critical Components Deep Dive**
 
-#### **1. field-editor.tsx** - Main Form Interface
+#### **1. field-editor.tsx** - Main Form Interface (French Translated)
 - **Purpose**: Primary interface where users fill out PDF form fields
 - **Key Features**:
   - Real-time field value updates with localStorage persistence
   - Category-based field grouping and display
-  - Template saving/loading functionality
-  - PDF generation and download
+  - Template saving/loading functionality with French labels
+  - PDF generation and download with translated buttons
   - Integration with field organizer
+  - French UI: "Champs de Formulaire", "Résumé du Document", "Organiser"
 - **State Management**:
   - `fieldValues`: Record<string, string> - All field data
   - `categories`: Array of category objects with field assignments
@@ -89,15 +123,31 @@ pdf-form-filler/
   - `pdf-field-values-{filename}` - Field data
   - `pdf-categories-{filename}` - Category structure
 
-#### **2. field-organizer.tsx** - Category Management
+#### **2. field-organizer.tsx** - Category Management (Enhanced Modals)
 - **Purpose**: Full-screen interface for organizing fields into categories
 - **Key Features**:
-  - Create, rename, delete categories
-  - Drag-and-drop style field assignment
+  - Create, rename, delete categories with French UI
+  - Professional modal styling with blurred backdrop
+  - Semi-transparent overlay (`bg-white/20` + `backdrop-blur-sm`)
+  - Enhanced dialog boxes with shadow and border styling
   - Apply/Cancel workflow with confirmation
   - Import/Export organization models
-- **UI Approach**: Uses plain div overlay (NOT shadcn Dialog) for full-screen experience
+- **UI Approach**: Enhanced modal design with proper visual separation
+- **Translation**: "Nouvelle catégorie", "Créer catégorie", "Annuler"
 - **Categories persist** between sessions via localStorage
+
+#### **3. Translation System** - Internationalization Core
+- **Purpose**: Centralized translation management for the entire application
+- **Key Features**:
+  - Type-safe translation keys with TypeScript support
+  - React hook integration (`useTranslations`)
+  - Comprehensive French translations (100+ keys)
+  - Easy language switching architecture
+  - Professional French terminology
+- **Files**:
+  - `/lib/translations/index.ts` - Hook and type definitions
+  - `/lib/translations/fr.ts` - French translations (default)
+  - `/lib/translations/en.ts` - English translations
 
 #### **3. lib/pdf-parser.ts** - PDF Processing Engine
 - **Functions**:
@@ -130,6 +180,34 @@ const nextConfig = {
 - Excludes `.next` directory to prevent compilation errors
 - Uses Next.js plugin for proper TypeScript integration
 - Paths configured for `@/*` imports
+
+---
+
+## 🎨 UI/UX Design System
+
+### **Animation System**
+- **Timing**: Consistent 200-300ms transitions for professional feel
+- **Effects**: 
+  - `animate-fade-in` - Smooth opacity transitions
+  - `animate-slide-up` - Page entry animations
+  - `animate-scale-in` - Modal and dialog appearances
+  - `transition-smooth` - Micro-interactions on buttons
+- **CSS Variables**: 
+  - `--animation-fast: 200ms`
+  - `--animation-medium: 300ms`
+  - `--easing-smooth: cubic-bezier(0.4, 0, 0.2, 1)`
+
+### **Modal Design**
+- **Enhanced Backdrop**: Semi-transparent blurred overlay (`bg-white/20` + `backdrop-blur-sm`)
+- **Professional Styling**: Shadow, border, and proper z-index layering
+- **Visual Separation**: Clear distinction between modal content and background
+- **User Experience**: Background remains visible but subtly dimmed and blurred
+
+### **Color Scheme**
+- **Primary**: Professional green for actions and highlights
+- **Background**: Clean white with subtle gray accents
+- **Text**: High contrast for accessibility (gray-900, gray-600, gray-500)
+- **Borders**: Light gray (#e5e7eb) for component separation
 
 ---
 
@@ -184,12 +262,26 @@ npm run dev
 
 ### **Testing Checklist**
 - [ ] Upload a PDF with form fields
+- [ ] Verify French interface displays correctly by default
 - [ ] Fill some fields and verify real-time saving
-- [ ] Create categories in organize window
+- [ ] Create categories in organize window with blurred backdrop
+- [ ] Test "Nouvelle catégorie" dialog with proper modal styling
 - [ ] Verify categories appear in main dashboard
+- [ ] Test template manager with French labels
 - [ ] Refresh page and confirm data persistence
 - [ ] Generate and download filled PDF
+- [ ] Check footer displays "2025" copyright
+- [ ] Verify all footer links redirect to home page
+- [ ] Test smooth animations and transitions
 - [ ] Check browser console for errors
+
+### **French Translation Testing**
+- [ ] Verify "Modèles" instead of "Templates"
+- [ ] Check "Sauvegarder le Modèle" button functionality
+- [ ] Test "Organiser" button opens field organizer
+- [ ] Confirm "Champs de Formulaire" header displays
+- [ ] Verify "Résumé du Document" section shows correctly
+- [ ] Check all dialog buttons use French text ("Créer", "Annuler")
 
 ### **Making Changes**
 - Always test data persistence after modifications
