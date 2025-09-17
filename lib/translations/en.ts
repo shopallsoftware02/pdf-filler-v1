@@ -36,6 +36,18 @@ export const en = {
   enterFieldName: (fieldName: string) => `Enter ${fieldName.toLowerCase()}`,
   selectFieldName: (fieldName: string) => `Select ${fieldName.toLowerCase()}`,
   required: "required",
+  
+  // Field Usage
+  appearsOnce: "Appears once",
+  appearsTimes: (count: number) => `Appears ${count} times`,
+  onPage: "on page",
+  onPages: "on pages",
+  fieldUsageTooltip: (count: number, pages: number[]) => {
+    if (count === 1) {
+      return `Appears once on page ${pages[0]}`
+    }
+    return `Appears ${count} times on pages ${pages.join(', ')}`
+  },
 
   // Field Organizer
   organizeFields: "Organize Fields",

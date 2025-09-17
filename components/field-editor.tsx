@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Download, FileText, Loader2, RotateCcw, Settings, Eye } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ArrowLeft, Download, FileText, Loader2, RotateCcw, Settings, Eye, Info } from "lucide-react"
 import type { PDFParseResult } from "@/lib/pdf-parser"
 import { fillPDFFields } from "@/lib/pdf-parser"
 import { TemplateManager } from "./template-manager"
@@ -232,6 +233,26 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
     }
   }
 
+  // Helper function to render field usage info
+  const renderFieldUsageInfo = (field: any) => {
+    if (!field.usageCount || !field.pages) return null
+    
+    const tooltipText = t.fieldUsageTooltip(field.usageCount, field.pages)
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help ml-1 inline-block transition-colors" />
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs">
+            <p className="text-xs">{tooltipText}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
   const renderField = (field: any) => {
     const value = fieldValues[field.name] || ""
 
@@ -239,9 +260,10 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
       case "text":
         return (
           <div key={field.name} className="space-y-2 animate-fade-in">
-            <Label htmlFor={field.name} className="text-sm font-medium">
+            <Label htmlFor={field.name} className="text-sm font-medium flex items-center">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
+              {renderFieldUsageInfo(field)}
             </Label>
             <Input
               id={field.name}
@@ -262,9 +284,10 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
               onCheckedChange={(checked) => updateFieldValue(field.name, checked ? "true" : "false")}
               className="transition-colors-smooth"
             />
-            <Label htmlFor={field.name} className="text-sm font-medium cursor-pointer">
+            <Label htmlFor={field.name} className="text-sm font-medium cursor-pointer flex items-center">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
+              {renderFieldUsageInfo(field)}
             </Label>
           </div>
         )
@@ -272,9 +295,10 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
       case "select":
         return (
           <div key={field.name} className="space-y-2 animate-fade-in">
-            <Label htmlFor={field.name} className="text-sm font-medium">
+            <Label htmlFor={field.name} className="text-sm font-medium flex items-center">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
+              {renderFieldUsageInfo(field)}
             </Label>
             <Select value={value} onValueChange={(newValue) => updateFieldValue(field.name, newValue)}>
               <SelectTrigger className="bg-white transition-colors-smooth hover:border-gray-400 focus:ring-2 focus:ring-primary">
@@ -294,9 +318,10 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
       case "radio":
         return (
           <div key={field.name} className="space-y-2 animate-fade-in">
-            <Label className="text-sm font-medium">
+            <Label className="text-sm font-medium flex items-center">
               {field.name}
               {field.required && <span className="text-destructive ml-1">*</span>}
+              {renderFieldUsageInfo(field)}
             </Label>
             <div className="space-y-2">
               {field.options?.map((option: string) => (
@@ -322,8 +347,9 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
       default:
         return (
           <div key={field.name} className="space-y-2 animate-fade-in">
-            <Label htmlFor={field.name} className="text-sm font-medium">
+            <Label htmlFor={field.name} className="text-sm font-medium flex items-center">
               {field.name} ({field.type}){field.required && <span className="text-destructive ml-1">*</span>}
+              {renderFieldUsageInfo(field)}
             </Label>
             <Input
               id={field.name}

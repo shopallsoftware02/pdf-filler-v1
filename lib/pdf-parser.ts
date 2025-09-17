@@ -9,6 +9,9 @@ export interface PDFField {
   options?: string[] // For select/radio fields
   page: number
   rect: [number, number, number, number] // [x, y, width, height]
+  // Field usage tracking
+  usageCount?: number // How many times this field appears in the PDF
+  pages?: number[] // All pages where this field appears
 }
 
 export interface PDFParseResult {
@@ -90,31 +93,97 @@ export async function parsePDFFields(file: File): Promise<PDFParseResult> {
 
       // Get field position and page information
       let rect: [number, number, number, number] = [0, 0, 200, 30]
-      let page = 1
+      let pages: number[] = []
 
       try {
         const widgets = (field as any).acroField?.getWidgets?.() || []
+        console.log(`[v0] Field "${fieldName}" has ${widgets.length} widget(s)`)
+        
         if (widgets.length > 0) {
-          const widget = widgets[0]
-          const widgetRect = widget.getRectangle?.()
-          if (widgetRect) {
-            rect = [widgetRect.x, widgetRect.y, widgetRect.width, widgetRect.height]
-          }
+          const allPages = pdfDoc.getPages()
+          console.log(`[v0] Document has ${allPages.length} pages`)
           
-          // Try to determine which page the field is on
-          const widgetPageRef = widget.getPageRef?.()
-          if (widgetPageRef) {
-            const pages = pdfDoc.getPages()
-            for (let i = 0; i < pages.length; i++) {
-              if (pages[i].ref === widgetPageRef) {
-                page = i + 1
-                break
+          // Process ALL widgets to find all pages where this field appears
+          for (let widgetIndex = 0; widgetIndex < widgets.length; widgetIndex++) {
+            const widget = widgets[widgetIndex]
+            
+            // Get rectangle from first widget only (for positioning)
+            if (widgetIndex === 0) {
+              const widgetRect = widget.getRectangle?.()
+              if (widgetRect) {
+                rect = [widgetRect.x, widgetRect.y, widgetRect.width, widgetRect.height]
+              }
+            }
+            
+            // Try to get the page reference from the widget using the P() method
+            const pageRef = (widget as any).P?.()
+            console.log(`[v0] Widget ${widgetIndex + 1}/${widgets.length} for "${fieldName}": pageRef =`, pageRef)
+            
+            if (pageRef) {
+              // Find which page this reference corresponds to
+              let pageFound = false
+              for (let pageIndex = 0; pageIndex < allPages.length; pageIndex++) {
+                const page = allPages[pageIndex]
+                if (page.ref === pageRef) {
+                  const pageNum = pageIndex + 1
+                  if (!pages.includes(pageNum)) {
+                    pages.push(pageNum)
+                    console.log(`[v0] ✓ Field "${fieldName}" widget ${widgetIndex + 1} found on page ${pageNum}`)
+                  }
+                  pageFound = true
+                  break
+                }
+              }
+              
+              if (!pageFound) {
+                console.log(`[v0] ⚠️ Widget pageRef ${pageRef} not found in document pages for "${fieldName}"`)
+              }
+            } else {
+              console.log(`[v0] ⚠️ Widget has no page reference for "${fieldName}"`)
+              
+              // Fallback: for widgets without page refs, try to find which page they're on
+              // by searching through all pages' annotations
+              let annotationFound = false
+              for (let pageIndex = 0; pageIndex < allPages.length; pageIndex++) {
+                const page = allPages[pageIndex]
+                
+                // Try to find this widget in the page's annotations
+                try {
+                  const pageAnnots = (page as any).node?.Annots?.()
+                  if (pageAnnots) {
+                    for (let annotIndex = 0; annotIndex < pageAnnots.size(); annotIndex++) {
+                      const annotDict = pageAnnots.lookup(annotIndex)
+                      if (annotDict === widget.dict) {
+                        const pageNum = pageIndex + 1
+                        if (!pages.includes(pageNum)) {
+                          pages.push(pageNum)
+                          console.log(`[v0] ✓ Field "${fieldName}" widget ${widgetIndex + 1} found on page ${pageNum} via annotation search`)
+                        }
+                        annotationFound = true
+                        break
+                      }
+                    }
+                  }
+                  if (annotationFound) break
+                } catch (e) {
+                  console.log(`[v0] Error searching annotations on page ${pageIndex + 1}:`, e)
+                }
+              }
+              
+              if (!annotationFound) {
+                console.log(`[v0] ⚠️ Could not find page for widget ${widgetIndex + 1} of "${fieldName}"`)
               }
             }
           }
         }
       } catch (e) {
         console.warn(`[v0] Could not get position for field ${fieldName}:`, e)
+      }
+
+      // If no pages detected, default to page 1
+      if (pages.length === 0) {
+        pages = [1]
+        console.log(`[v0] No pages detected for "${fieldName}", defaulting to page 1`)
       }
 
       // Determine if field is required (this is a best-effort check)
@@ -130,28 +199,78 @@ export async function parsePDFFields(file: File): Promise<PDFParseResult> {
         isRequired = /(\*|required|mandatory)/i.test(fieldName)
       }
 
-      fields.push({
-        name: fieldName,
-        type: fieldType,
-        value,
-        required: isRequired,
-        options,
-        page,
-        rect,
-      })
+      // Create separate field entries for each page where this field appears
+      for (const pageNum of pages) {
+        fields.push({
+          name: fieldName,
+          type: fieldType,
+          value,
+          required: isRequired,
+          options,
+          page: pageNum,
+          rect,
+        })
+        
+        console.log(`[v0] Added field: "${fieldName}" on page ${pageNum}`)
+      }
     }
 
-    console.log("[v0] Successfully parsed", fields.length, "fields")
+    console.log("[v0] Successfully parsed", fields.length, "raw fields")
+    console.log("[v0] Raw fields summary:")
+    fields.forEach((field, index) => {
+      console.log(`  ${index + 1}. "${field.name}" (page ${field.page}) - ${field.type}`)
+    })
+
+    // Process field usage tracking and deduplication
+    const fieldUsageMap = new Map<string, { 
+      field: PDFField, 
+      pages: Set<number>, 
+      count: number 
+    }>()
+
+    // Track field usage across pages
+    for (const field of fields) {
+      console.log(`[v0] Processing for deduplication: "${field.name}" on page ${field.page}`)
+      
+      if (fieldUsageMap.has(field.name)) {
+        const existing = fieldUsageMap.get(field.name)!
+        existing.pages.add(field.page)
+        existing.count++
+        console.log(`[v0] Found duplicate: "${field.name}" - now appears ${existing.count} times on pages [${Array.from(existing.pages).join(', ')}]`)
+      } else {
+        fieldUsageMap.set(field.name, {
+          field: { ...field },
+          pages: new Set([field.page]),
+          count: 1
+        })
+        console.log(`[v0] First occurrence: "${field.name}" on page ${field.page}`)
+      }
+    }
+
+    // Create deduplicated fields with usage metadata
+    const processedFields: PDFField[] = []
+    for (const [fieldName, usage] of fieldUsageMap) {
+      const field = usage.field
+      field.usageCount = usage.count
+      field.pages = Array.from(usage.pages).sort((a, b) => a - b)
+      processedFields.push(field)
+    }
+
+    console.log(`[v0] Deduplicated to ${processedFields.length} unique fields`)
+    console.log("[v0] Field usage summary:")
+    processedFields.forEach(field => {
+      console.log(`  - ${field.name}: ${field.usageCount} times on pages [${field.pages?.join(', ')}]`)
+    })
 
     const title = file.name.replace(".pdf", "")
     const pageCount = pdfDoc.getPageCount()
 
-    if (fields.length === 0) {
+    if (processedFields.length === 0) {
       throw new Error("No form fields detected in this PDF. Please ensure the PDF contains fillable form fields.")
     }
 
     return {
-      fields,
+      fields: processedFields,
       pageCount,
       title,
     }
