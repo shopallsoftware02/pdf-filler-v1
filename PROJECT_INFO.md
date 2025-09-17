@@ -5,10 +5,12 @@
 **PDF Form Filler** is a Next.js-based web application that allows users to upload PDF forms, automatically detect form fields, fill them out interactively, and organize fields into custom categories. The application features a comprehensive French translation system and provides a clean, user-friendly interface for managing PDF form data with persistent storage.
 
 ### 🎯 Core Functionality
-- **PDF Upload & Parsing**: Drag-and-drop PDF upload with automatic form field detection
+- **PDF Upload & Parsing**: Drag-and-drop PDF upload with automatic form field detection and accurate multi-page field location tracking
 - **Interactive Form Filling**: Real-time form field editing with various input types (text, checkbox, radio, select)
+- **Accurate Field Usage Tracking**: Advanced PDF parsing shows exactly where each field appears across multi-page documents
 - **Field Organization**: Create custom categories to group related fields for better organization
-- **Data Persistence**: Automatic localStorage saving of both field values and category organization
+- **Profile Management**: Save and load complete form configurations with client profiles matching Python app functionality
+- **Data Persistence**: Automatic localStorage saving of field values, category organization, and user profiles
 - **PDF Generation**: Export filled forms as new PDF files
 - **Internationalization**: Comprehensive French translation system with centralized translation management
 - **Clean UI/UX**: Modern interface built with shadcn/ui components, smooth animations, and professional modal designs
@@ -149,12 +151,19 @@ pdf-form-filler/
   - `/lib/translations/fr.ts` - French translations (default)
   - `/lib/translations/en.ts` - English translations
 
-#### **3. lib/pdf-parser.ts** - PDF Processing Engine
+#### **3. lib/pdf-parser.ts** - Enhanced PDF Processing Engine
 - **Functions**:
-  - `parsePDFFields(file)`: Extracts form fields from PDF
+  - `parsePDFFields(file)`: Extracts form fields from PDF with accurate multi-page detection
   - `fillPDFFields(file, values)`: Creates new PDF with filled fields
 - **Field Types Supported**: text, checkbox, radio, select/dropdown
+- **Advanced Features**:
+  - **Multi-page field detection**: Uses pdf-lib `widget.P()` method for accurate page references
+  - **Fallback mechanism**: Searches page annotations when page references unavailable
+  - **Field usage tracking**: Provides occurrence counts and exact page locations
+  - **Widget processing**: Handles multiple widgets per field across different pages
+  - **Research-based implementation**: Built using official pdf-lib documentation and best practices
 - **Uses dynamic imports** to prevent SSR issues with pdf-lib
+- **Comprehensive debugging**: Detailed console logging for PDF parsing diagnostics
 
 ---
 
@@ -267,13 +276,16 @@ npm run dev
 - [ ] Create categories in organize window with blurred backdrop
 - [ ] Test "Nouvelle catégorie" dialog with proper modal styling
 - [ ] Verify categories appear in main dashboard
+- [ ] Test profile manager with save/load functionality
+- [ ] Check field usage tooltips show accurate page locations (e.g., "pages 1, 12" not "pages 1, 2")
+- [ ] Verify multi-page field detection works correctly with console logging
 - [ ] Test template manager with French labels
 - [ ] Refresh page and confirm data persistence
 - [ ] Generate and download filled PDF
 - [ ] Check footer displays "2025" copyright
 - [ ] Verify all footer links redirect to home page
 - [ ] Test smooth animations and transitions
-- [ ] Check browser console for errors
+- [ ] Check browser console for errors and PDF parsing diagnostics
 
 ### **French Translation Testing**
 - [ ] Verify "Modèles" instead of "Templates"
@@ -316,6 +328,8 @@ npm run dev
 - [x] Improved hover feedback and UI interactions
 - [x] **CRITICAL: Full session persistence** - No more data loss on refresh
 - [x] **Complete field organization system** - Categories with reordering
+- [x] **Accurate multi-page PDF field detection** - Proper page location tracking
+- [x] **Professional profile management system** - Python app compatible
 - [ ] Validation system for required fields
 - [ ] Multi-language support expansion
 
@@ -375,7 +389,23 @@ npm run dev
 
 ---
 
-## 🎯 **LATEST MAJOR ACHIEVEMENTS - September 15, 2025**
+## 🎯 **LATEST MAJOR ACHIEVEMENTS - September 17, 2025**
+
+### **🔍 Enhanced Multi-Page PDF Field Detection System**
+- **Problem Solved**: Field usage tracking now shows accurate page locations instead of defaulting to consecutive pages
+- **Research-Driven**: Implementation based on official pdf-lib documentation and source code analysis
+- **Technical Excellence**: Uses proper `widget.P()` method for page reference detection with robust fallback mechanisms
+- **User Impact**: Tooltips now correctly display "Apparait 2 fois sur les pages 1, 12" instead of incorrect "pages 1, 2"
+- **Professional PDF Parsing**: Leverages pdf-lib internal APIs for accurate widget page determination
+
+### **🔧 Advanced PDF Processing Capabilities**
+- **Widget Analysis**: Processes ALL widgets per field instead of just the first widget
+- **Page Reference Matching**: Compares widget page references against document pages for precise location detection
+- **Annotation Fallback**: Searches page annotations when primary page reference method unavailable
+- **Edge Case Handling**: Graceful degradation with comprehensive error logging and diagnostic information
+- **Multi-Page Support**: Correctly identifies fields appearing on non-consecutive pages (e.g., pages 1, 5, 12)
+
+### **� Complete Session Persistence System**
 
 ### **🔄 Complete Session Persistence System**
 - **Problem Solved**: Page refresh no longer sends users back to upload screen
@@ -384,19 +414,34 @@ npm run dev
 - **Seamless UX**: Loading states and smooth restoration process
 - **Technical**: Uses localStorage with base64 file encoding and structured data storage
 
-### **📋 Enhanced Field Organization**
+### **� Complete Profile Management System**
+- **Python App Compatibility**: JSON profile structure matches original Python application exactly
+- **Client Profile Workflow**: Save complete form configurations with named client profiles (e.g., "FALCK BRYAN client")
+- **Full State Persistence**: Profiles include field values, category organization, and metadata
+- **Cross-PDF Loading**: Load saved profiles into new PDF documents with automatic field matching
+- **Export/Import**: JSON-based profile sharing and backup capabilities
 - **Reordering Within Categories**: Move fields up/down within each category using arrow buttons
 - **Visual Feedback**: Improved hover states with scaling and color transitions
 - **Dashboard Integration**: Field order changes immediately reflect in main interface
 - **Persistence**: Field order survives page refreshes and maintains organization
 
-### **🎨 UI/UX Polish**
+### **🎨 UI/UX Polish & Multi-Page Field Detection**
+- **Accurate Field Usage Display**: Enhanced tooltips show precise page locations and occurrence counts
+- **Better Hover Feedback**: All interactive elements have clear cursor and visual feedback
+- **Smooth Transitions**: Scale effects and color changes for better user experience
+- **Professional PDF Parsing**: Research-based implementation using official pdf-lib APIs
+- **Comprehensive Debugging**: Detailed console output for PDF field analysis and troubleshooting
+- **Loading States**: Proper feedback during session restoration and data loading
+- **Error Prevention**: Robust error handling for localStorage operations and PDF processing
 - **Better Hover Feedback**: All interactive elements have clear cursor and visual feedback
 - **Smooth Transitions**: Scale effects and color changes for better user experience
 - **Loading States**: Proper feedback during session restoration and data loading
 - **Error Prevention**: Robust error handling for localStorage operations
 
 ### **🐛 Critical Fixes Completed**
+- **Multi-Page Field Detection**: Resolved incorrect page location reporting in field usage tooltips
+- **Widget Processing Logic**: Fixed widget processing to handle ALL widgets per field instead of just first widget
+- **Page Reference API**: Implemented proper pdf-lib `widget.P()` method usage for accurate page detection
 - **Object.defineProperty Error**: Resolved with dynamic PDF library imports
 - **TypeScript Configuration**: Fixed Next.js internal file conflicts
 - **Category Display Bug**: Fixed renderFieldsByCategory function integration
@@ -428,5 +473,5 @@ npm run lint         # Run ESLint
 
 ---
 
-*Last Updated: September 15, 2025*
+*Last Updated: September 17, 2025*
 *This documentation should provide complete context for any AI agent working on this project.*
