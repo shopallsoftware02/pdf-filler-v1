@@ -10,15 +10,17 @@ const nextConfig = {
         fs: false,
         path: false,
         buffer: false,
-        canvas: false,
       }
     }
     
-    // Ignore pdfjs canvas import to prevent issues
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      canvas: false,
-    }
+    // Proper PDF.js configuration for webpack
+    config.module.rules.push({
+      test: /\.m?js$/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    })
     
     return config
   },

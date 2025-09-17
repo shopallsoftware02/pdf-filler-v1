@@ -13,6 +13,7 @@ import { fillPDFFields } from "@/lib/pdf-parser"
 import { TemplateManager } from "./template-manager"
 import { FieldOrganizer } from "./field-organizer"
 import { PDFPreview } from "./pdf-preview"
+import { ProfileManager, type ProfileData } from "./profile-manager"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslations } from "@/lib/translations"
 
@@ -119,6 +120,29 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
       clearedValues[key] = ""
     })
     setFieldValues(clearedValues)
+  }
+
+  // Handle profile loading
+  const handleLoadProfile = (profileData: ProfileData) => {
+    // Load field values
+    const updatedValues = { ...fieldValues }
+    Object.entries(profileData.defaults).forEach(([fieldName, value]) => {
+      if (fieldName in updatedValues) {
+        updatedValues[fieldName] = value
+      }
+    })
+    setFieldValues(updatedValues)
+
+    // Load field organization if available
+    if (profileData.field_organization) {
+      const newCategories = Object.entries(profileData.field_organization).map(([categoryName, fields], index) => ({
+        id: `category-${index + 1}`,
+        name: categoryName,
+        fields: fields.filter(fieldName => pdfData.fields.some(f => f.name === fieldName))
+      }))
+      setCategories(newCategories)
+      localStorage.setItem(`pdf-categories-${originalFile.name}`, JSON.stringify(newCategories))
+    }
   }
 
   // Render fields grouped by categories
@@ -449,12 +473,22 @@ export function FieldEditor({ pdfData, originalFile, onBack, language = "fr" }: 
             </Card>
           </div>
         ) : (
-          /* Sidebar - Templates and Summary */
+          /* Sidebar - Profile Manager, Templates and Summary */
           <div className="space-y-6">
+            {/* Profile Manager - New section at top like Python app */}
+            <ProfileManager
+              currentFields={fieldValues}
+              categories={categories}
+              documentName={pdfData.title || originalFile.name}
+              onLoadProfile={handleLoadProfile}
+              language={language}
+            />
+
             <TemplateManager
               currentFields={fieldValues}
               documentName={pdfData.title || originalFile.name}
               onLoadTemplate={loadTemplate}
+              language={language}
             />
 
             <Card>

@@ -119,6 +119,25 @@ export const fr = {
   allRightsReserved: "Tous droits réservés",
   poweredBy: "Propulsé par",
 
+  // Profile Management
+  profiles: "Profils",
+  profileName: "Nom du Profil",
+  enterProfileName: "Entrer le nom du profil",
+  loadProfile: "Charger",
+  saveProfile: "Sauvegarder", 
+  loadProfileTooltip: "Charger un profil existant",
+  saveProfileTooltip: "Sauvegarder le profil actuel",
+  profileSaved: "Profil sauvegardé avec succès",
+  profileLoaded: "Profil chargé avec succès",
+  profileNotFound: "Profil non trouvé",
+  selectProfile: "Sélectionner un profil",
+  deleteProfile: "Supprimer le profil",
+  exportProfile: "Exporter le profil",
+  importProfile: "Importer un profil",
+  profileManager: "Gestionnaire de Profils",
+  clientProfile: "profil client",
+  recentProfiles: "Profils Récents",
+
   // Accessibility
   closeDialog: "Fermer la boîte de dialogue",
   openMenu: "Ouvrir le menu",

@@ -28,20 +28,22 @@ export function PDFPreview({ file, className = "", onFieldClick }: PDFPreviewPro
         setIsLoading(true)
         setError(null)
         
-        // Dynamic import only when needed
+        // Import PDF.js with proper ES module syntax
         const pdfjsLib = await import('pdfjs-dist')
         
-        // Set up PDF.js worker
+        // Set up PDF.js worker with correct path  
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
         
         const fileArrayBuffer = await file.arrayBuffer()
         const pdf = await pdfjsLib.getDocument(fileArrayBuffer).promise
         
+        console.log("PDF loaded successfully:", pdf.numPages, "pages")
         setPdfDoc(pdf)
         setTotalPages(pdf.numPages)
+        setCurrentPage(1) // Reset to first page
       } catch (err) {
         console.error("Error loading PDF:", err)
-        setError("Failed to load PDF preview")
+        setError("Failed to load PDF preview: " + (err as Error).message)
       } finally {
         setIsLoading(false)
       }
@@ -54,42 +56,60 @@ export function PDFPreview({ file, className = "", onFieldClick }: PDFPreviewPro
     // Cleanup function
     return () => {
       if (pdfDoc) {
+        console.log("Cleaning up PDF document")
         pdfDoc.destroy()
       }
     }
-  }, [file, pdfDoc])
+  }, [file]) // Remove pdfDoc dependency to prevent loops
 
   // Render current page
   useEffect(() => {
     const renderPage = async () => {
-      if (!pdfDoc || !canvasRef.current) return
+      if (!pdfDoc || !canvasRef.current) {
+        console.log("Cannot render: missing pdfDoc or canvas ref")
+        return
+      }
 
       try {
+        console.log("Starting to render page", currentPage)
         const page = await pdfDoc.getPage(currentPage)
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
         
-        if (!context) return
+        if (!context) {
+          console.error("Failed to get canvas context")
+          setError("Failed to initialize canvas for PDF rendering")
+          return
+        }
+
+        // Clear any previous renders
+        context.clearRect(0, 0, canvas.width, canvas.height)
 
         const viewport = page.getViewport({ scale, rotation })
         
+        // Set canvas dimensions
         canvas.height = viewport.height
         canvas.width = viewport.width
+        canvas.style.width = viewport.width + "px"
+        canvas.style.height = viewport.height + "px"
 
         const renderContext = {
           canvasContext: context,
           viewport: viewport,
-          canvas: canvas,
         }
 
+        console.log("Rendering page with context:", renderContext)
         await page.render(renderContext).promise
+        console.log("Page rendered successfully")
       } catch (err) {
         console.error("Error rendering page:", err)
-        setError("Failed to render PDF page")
+        setError("Failed to render PDF page: " + (err as Error).message)
       }
     }
 
-    renderPage()
+    if (pdfDoc && canvasRef.current) {
+      renderPage()
+    }
   }, [pdfDoc, currentPage, scale, rotation])
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -196,11 +216,20 @@ export function PDFPreview({ file, className = "", onFieldClick }: PDFPreviewPro
 
         <div className="border rounded-lg overflow-auto bg-gray-50 dark:bg-gray-900" style={{ maxHeight: '600px' }}>
           <div className="flex justify-center p-4">
+            {!pdfDoc && !isLoading && (
+              <div className="text-center p-8 text-muted-foreground">
+                <p>PDF preview will appear here</p>
+              </div>
+            )}
             <canvas
               ref={canvasRef}
               onClick={handleCanvasClick}
               className="border shadow-sm cursor-crosshair"
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{ 
+                maxWidth: '100%', 
+                height: 'auto',
+                display: pdfDoc ? 'block' : 'none'
+              }}
             />
           </div>
         </div>

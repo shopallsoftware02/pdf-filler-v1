@@ -119,6 +119,25 @@ export const en = {
   allRightsReserved: "All rights reserved",
   poweredBy: "Powered by",
 
+  // Profile Management
+  profiles: "Profiles",
+  profileName: "Profile Name",
+  enterProfileName: "Enter profile name",
+  loadProfile: "Load",
+  saveProfile: "Save",
+  loadProfileTooltip: "Load an existing profile",
+  saveProfileTooltip: "Save current profile",
+  profileSaved: "Profile saved successfully",
+  profileLoaded: "Profile loaded successfully",
+  profileNotFound: "Profile not found",
+  selectProfile: "Select a profile",
+  deleteProfile: "Delete profile",
+  exportProfile: "Export profile",
+  importProfile: "Import profile",
+  profileManager: "Profile Manager",
+  clientProfile: "client profile",
+  recentProfiles: "Recent Profiles",
+
   // Accessibility
   closeDialog: "Close dialog",
   openMenu: "Open menu",
